@@ -3,145 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Real-Time Countdown to December 1st</title>
+<title>Responsive Real-Time Birthday Countdown</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background-color: #000033;
-        color: white;
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-    }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    #countdown, #birthday {
-        position: relative;
-        width: 100%;
-        height: 100vh;
-    }
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #000033;
+    color: white;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
 
-    h1, p {
-        position: relative;
-        z-index: 10;
-    }
+#countdown, #birthday {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
 
-    /* Stars */
-    #starsCountdown, #stars {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        overflow: hidden;
-    }
+h1, p {
+    position: relative;
+    z-index: 10;
+    margin: 20px 0;
+}
 
-    .star {
-        position: absolute;
-        background: #fff;
-        border-radius: 50%;
-        opacity: 0.8;
-        animation: twinkle 2s infinite ease-in-out;
-    }
+/* Stars */
+#starsCountdown, #stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
 
-    @keyframes twinkle {
-        0% { opacity: 0.5; }
-        50% { opacity: 1; }
-        100% { opacity: 0.5; }
-    }
+.star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: twinkle 2s infinite ease-in-out;
+}
 
-    /* Full moon (stationary) */
+@keyframes twinkle {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+/* Full moon */
+#moonCountdown, #moon {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    width: 15vw;
+    max-width: 100px;
+    height: 15vw;
+    max-height: 100px;
+    background: radial-gradient(circle at 30% 30%, #fff, #ddddff);
+    border-radius: 50%;
+    box-shadow: 0 0 30px #fff, 0 0 60px #aaa;
+    z-index: 5;
+}
+
+/* Fireworks */
+.firework {
+    position: absolute;
+    width: 0.8vw;
+    max-width: 5px;
+    height: 0.8vw;
+    max-height: 5px;
+    background: white;
+    border-radius: 50%;
+    animation: explode 1s ease-out forwards;
+}
+
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(10); opacity: 0; }
+}
+
+/* Confetti */
+.confetti {
+    position: absolute;
+    width: 1vw;
+    max-width: 10px;
+    height: 1vw;
+    max-height: 10px;
+    border-radius: 50%;
+    animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
+}
+
+/* Cake */
+#cake {
+    display: none;
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40vw;
+    max-width: 200px;
+    height: 40vw;
+    max-height: 200px;
+}
+
+.cake-layer {
+    width: 100%;
+    height: 25%;
+    background: pink;
+    border-radius: 10px;
+    margin: 0 auto;
+    position: relative;
+    top: 0;
+}
+
+.candle {
+    width: 5%;
+    max-width: 10px;
+    height: 15%;
+    max-height: 30px;
+    background: yellow;
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+    animation: candleFlicker 0.2s infinite alternate;
+}
+
+@keyframes candleFlicker {
+    0% { background: yellow; }
+    50% { background: orange; }
+    100% { background: yellow; }
+}
+
+#wishes {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 6vw;
+    max-font-size: 36px;
+    text-shadow: 0 0 20px #fff;
+    z-index: 10;
+    padding: 0 10px;
+}
+
+@media(max-width: 768px){
+    #wishes { font-size: 8vw; }
+    h1 { font-size: 6vw; }
+    p { font-size: 4vw; }
+
+    /* Move moon below the countdown text on mobile */
     #moonCountdown, #moon {
-        position: absolute;
-        top: 50px;
-        right: 100px;
-        width: 100px;
-        height: 100px;
-        background: radial-gradient(circle at 30% 30%, #fff, #ddddff);
-        border-radius: 50%;
-        box-shadow: 0 0 30px #fff, 0 0 60px #aaa;
-        z-index: 5;
-    }
-
-    /* Fireworks */
-    .firework {
-        position: absolute;
-        width: 5px;
-        height: 5px;
-        background: white;
-        border-radius: 50%;
-        animation: explode 1s ease-out forwards;
-    }
-
-    @keyframes explode {
-        0% { transform: scale(1); opacity: 1; }
-        100% { transform: scale(10); opacity: 0; }
-    }
-
-    /* Confetti */
-    .confetti {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        animation: fall 3s linear forwards;
-    }
-
-    @keyframes fall {
-        0% { transform: translateY(0) rotate(0deg); }
-        100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
-    }
-
-    /* Cake */
-    #cake {
-        display: none;
-        position: absolute;
-        bottom: 50px;
+        top: auto;
+        bottom: 15%;
+        right: 50%;
         left: 50%;
         transform: translateX(-50%);
-        width: 200px;
-        height: 200px;
+        width: 25vw;
+        height: 25vw;
+        max-width: 120px;
+        max-height: 120px;
     }
-
-    .cake-layer {
-        width: 200px;
-        height: 50px;
-        background: pink;
-        border-radius: 10px;
-        margin: 0 auto;
-        position: relative;
-        top: 0;
-    }
-
-    .candle {
-        width: 10px;
-        height: 30px;
-        background: yellow;
-        position: absolute;
-        top: -40px;
-        left: 50%;
-        transform: translateX(-50%);
-        border-radius: 5px;
-        animation: candleFlicker 0.2s infinite alternate;
-    }
-
-    @keyframes candleFlicker {
-        0% { background: yellow; }
-        50% { background: orange; }
-        100% { background: yellow; }
-    }
-
-    #wishes {
-        display: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 36px;
-        text-shadow: 0 0 20px #fff;
-        z-index: 10;
-    }
+}
 </style>
 </head>
 <body>
@@ -149,7 +183,7 @@
 <div id="countdown">
     <div id="starsCountdown"></div>
     <div id="moonCountdown"></div>
-    <h1>Countdown to December 1st 12:00 AM!</h1>
+    <h1>Countdown</h1>
     <p id="timer">Calculating...</p>
 </div>
 
@@ -158,8 +192,8 @@
     <div id="moon"></div>
     <div id="cake">
         <div class="cake-layer"></div>
-        <div class="cake-layer" style="top:50px;"></div>
-        <div class="cake-layer" style="top:100px;"></div>
+        <div class="cake-layer" style="top:25%;"></div>
+        <div class="cake-layer" style="top:50%;"></div>
         <div class="candle"></div>
     </div>
     <div id="wishes">🎂 Happy Birthday! 🎉 May your day be filled with joy and celebrations!</div>
@@ -221,7 +255,7 @@ async function updateCountdown(){
         const minutes = Math.floor((diff % (1000*60*60))/(1000*60));
         const seconds = Math.floor((diff % (1000*60))/1000);
 
-        countdownTimer.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds until December 1st 12:00 AM!`;
+        countdownTimer.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds`;
     }else{
         countdownContainer.style.display='none';
         birthdayContainer.style.display='block';
@@ -264,7 +298,6 @@ function launchConfetti(num){
 // Run every second
 const interval = setInterval(updateCountdown, 1000);
 updateCountdown();
-
 </script>
 </body>
 </html>
