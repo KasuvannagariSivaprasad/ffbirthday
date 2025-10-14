@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real-Time Countdown to December 1st</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #000033;
+        color: white;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    #countdown, #birthday {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+    }
+
+    h1, p {
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Stars */
+    #starsCountdown, #stars {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .star {
+        position: absolute;
+        background: #fff;
+        border-radius: 50%;
+        opacity: 0.8;
+        animation: twinkle 2s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+        0% { opacity: 0.5; }
+        50% { opacity: 1; }
+        100% { opacity: 0.5; }
+    }
+
+    /* Full moon (stationary) */
+    #moonCountdown, #moon {
+        position: absolute;
+        top: 50px;
+        right: 100px;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle at 30% 30%, #fff, #ddddff);
+        border-radius: 50%;
+        box-shadow: 0 0 30px #fff, 0 0 60px #aaa;
+        z-index: 5;
+    }
+
+    /* Fireworks */
+    .firework {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        background: white;
+        border-radius: 50%;
+        animation: explode 1s ease-out forwards;
+    }
+
+    @keyframes explode {
+        0% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(10); opacity: 0; }
+    }
+
+    /* Confetti */
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(0) rotate(0deg); }
+        100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Cake */
+    #cake {
+        display: none;
+        position: absolute;
+        bottom: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 200px;
+    }
+
+    .cake-layer {
+        width: 200px;
+        height: 50px;
+        background: pink;
+        border-radius: 10px;
+        margin: 0 auto;
+        position: relative;
+        top: 0;
+    }
+
+    .candle {
+        width: 10px;
+        height: 30px;
+        background: yellow;
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 5px;
+        animation: candleFlicker 0.2s infinite alternate;
+    }
+
+    @keyframes candleFlicker {
+        0% { background: yellow; }
+        50% { background: orange; }
+        100% { background: yellow; }
+    }
+
+    #wishes {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 36px;
+        text-shadow: 0 0 20px #fff;
+        z-index: 10;
+    }
+</style>
+</head>
+<body>
+
+<div id="countdown">
+    <div id="starsCountdown"></div>
+    <div id="moonCountdown"></div>
+    <h1>Countdown to December 1st 12:00 AM!</h1>
+    <p id="timer">Calculating...</p>
+</div>
+
+<div id="birthday">
+    <div id="stars"></div>
+    <div id="moon"></div>
+    <div id="cake">
+        <div class="cake-layer"></div>
+        <div class="cake-layer" style="top:50px;"></div>
+        <div class="cake-layer" style="top:100px;"></div>
+        <div class="candle"></div>
+    </div>
+    <div id="wishes">🎂 Happy Birthday! 🎉 May your day be filled with joy and celebrations!</div>
+</div>
+
+<script>
+// Target date
+const targetDate = new Date();
+targetDate.setFullYear(targetDate.getFullYear());
+targetDate.setMonth(11);  // December
+targetDate.setDate(1);
+targetDate.setHours(0,0,0,0);
+if(targetDate < new Date()) targetDate.setFullYear(targetDate.getFullYear()+1);
+
+const countdownTimer = document.getElementById('timer');
+const countdownContainer = document.getElementById('countdown');
+const birthdayContainer = document.getElementById('birthday');
+const starsCountdown = document.getElementById('starsCountdown');
+const starsBirthday = document.getElementById('stars');
+const cake = document.getElementById('cake');
+const wishes = document.getElementById('wishes');
+
+// Create stars
+function createStars(container, count){
+    for(let i=0;i<count;i++){
+        const star = document.createElement('div');
+        star.className='star';
+        star.style.width = `${Math.random()*3+1}px`;
+        star.style.height = star.style.width;
+        star.style.top = `${Math.random()*100}%`;
+        star.style.left = `${Math.random()*100}%`;
+        star.style.animationDelay = `${Math.random()*2}s`;
+        container.appendChild(star);
+    }
+}
+
+// Initial stars for countdown
+createStars(starsCountdown, 50);
+
+// Fetch real-time from API
+async function getRealTime(){
+    try{
+        const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Kolkata');
+        const data = await response.json();
+        return new Date(data.datetime);
+    }catch(err){
+        console.error('Error fetching real-time:', err);
+        return new Date(); // fallback to browser time
+    }
+}
+
+async function updateCountdown(){
+    const now = await getRealTime();
+    const diff = targetDate - now;
+
+    if(diff > 0){
+        const days = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff % (1000*60*60*24))/(1000*60*60));
+        const minutes = Math.floor((diff % (1000*60*60))/(1000*60));
+        const seconds = Math.floor((diff % (1000*60))/1000);
+
+        countdownTimer.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds until December 1st 12:00 AM!`;
+    }else{
+        countdownContainer.style.display='none';
+        birthdayContainer.style.display='block';
+        cake.style.display='block';
+        wishes.style.display='block';
+        createStars(starsBirthday, 50);
+        launchFireworks(15);
+        launchConfetti(50);
+        clearInterval(interval);
+    }
+}
+
+// Fireworks
+function launchFireworks(num){
+    for(let i=0;i<num;i++){
+        const firework = document.createElement('div');
+        firework.className='firework';
+        firework.style.left = Math.random()*window.innerWidth+'px';
+        firework.style.top = Math.random()*window.innerHeight/2+'px';
+        firework.style.background = `hsl(${Math.random()*360},100%,50%)`;
+        document.body.appendChild(firework);
+        setTimeout(()=>firework.remove(),1000);
+    }
+    setTimeout(()=>launchFireworks(num),1200);
+}
+
+// Confetti
+function launchConfetti(num){
+    for(let i=0;i<num;i++){
+        const confetti = document.createElement('div');
+        confetti.className='confetti';
+        confetti.style.left=Math.random()*window.innerWidth+'px';
+        confetti.style.background=`hsl(${Math.random()*360},100%,50%)`;
+        document.body.appendChild(confetti);
+        setTimeout(()=>confetti.remove(),3000);
+    }
+    setTimeout(()=>launchConfetti(num),3500);
+}
+
+// Run every second
+const interval = setInterval(updateCountdown, 1000);
+updateCountdown();
+
+</script>
+</body>
+</html>
