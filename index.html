@@ -21,12 +21,16 @@ body {
     position: relative;
     width: 100%;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* vertically center */
+    align-items: center; /* horizontally center */
 }
 
 h1, p {
     position: relative;
     z-index: 10;
-    margin: 20px 0;
+    margin: 10px 0;
 }
 
 /* Stars */
@@ -54,7 +58,7 @@ h1, p {
     100% { opacity: 0.5; }
 }
 
-/* Full moon (always top-right) */
+/* Full moon (top-right corner) */
 #moonCountdown, #moon {
     position: absolute;
     top: 5%;
@@ -163,14 +167,21 @@ h1, p {
     h1 { font-size: 6vw; }
     p { font-size: 4vw; }
 
-    /* Keep moon at top-right corner (not bottom) */
     #moonCountdown, #moon {
         top: 10px;
         right: 10px;
-        width: 25vw;
-        height: 25vw;
+        width: 22vw;
+        height: 22vw;
         max-width: 80px;
         max-height: 80px;
+    }
+
+    /* Make countdown text perfectly centered */
+    #countdown {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 0 20px;
     }
 }
 </style>
@@ -227,7 +238,6 @@ function createStars(container, count){
     }
 }
 
-// Initial stars for countdown
 createStars(starsCountdown, 50);
 
 // Fetch real-time from API
@@ -238,7 +248,7 @@ async function getRealTime(){
         return new Date(data.datetime);
     }catch(err){
         console.error('Error fetching real-time:', err);
-        return new Date(); // fallback
+        return new Date();
     }
 }
 
@@ -251,11 +261,10 @@ async function updateCountdown(){
         const hours = Math.floor((diff % (1000*60*60*24))/(1000*60*60));
         const minutes = Math.floor((diff % (1000*60*60))/(1000*60));
         const seconds = Math.floor((diff % (1000*60))/1000);
-
         countdownTimer.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds`;
     }else{
         countdownContainer.style.display='none';
-        birthdayContainer.style.display='block';
+        birthdayContainer.style.display='flex';
         cake.style.display='block';
         wishes.style.display='block';
         createStars(starsBirthday, 50);
@@ -292,7 +301,6 @@ function launchConfetti(num){
     setTimeout(()=>launchConfetti(num),3500);
 }
 
-// Run every second
 const interval = setInterval(updateCountdown, 1000);
 updateCountdown();
 </script>
