@@ -57,7 +57,7 @@ h1, p {
 /* Full moon */
 #moonCountdown, #moon {
     position: absolute;
-    top: 5%;
+    top: 10%;
     right: 5%;
     width: 15vw;
     max-width: 100px;
@@ -158,15 +158,15 @@ h1, p {
     padding: 0 10px;
 }
 
+/* ✅ Responsive Fix — Moon above text in mobile view */
 @media(max-width: 768px){
     #wishes { font-size: 8vw; }
     h1 { font-size: 6vw; }
     p { font-size: 4vw; }
 
-    /* Move moon below the countdown text on mobile */
     #moonCountdown, #moon {
-        top: auto;
-        bottom: 15%;
+        top: 5%;
+        bottom: auto;
         right: 50%;
         left: 50%;
         transform: translateX(-50%);
@@ -200,7 +200,7 @@ h1, p {
 </div>
 
 <script>
-// Target date
+// Target date: December 1, 12:00 AM
 const targetDate = new Date();
 targetDate.setFullYear(targetDate.getFullYear());
 targetDate.setMonth(11);  // December
@@ -230,7 +230,7 @@ function createStars(container, count){
     }
 }
 
-// Initial stars for countdown
+// Initial stars
 createStars(starsCountdown, 50);
 
 // Fetch real-time from API
@@ -241,7 +241,7 @@ async function getRealTime(){
         return new Date(data.datetime);
     }catch(err){
         console.error('Error fetching real-time:', err);
-        return new Date(); // fallback to browser time
+        return new Date(); // fallback
     }
 }
 
@@ -254,7 +254,6 @@ async function updateCountdown(){
         const hours = Math.floor((diff % (1000*60*60*24))/(1000*60*60));
         const minutes = Math.floor((diff % (1000*60*60))/(1000*60));
         const seconds = Math.floor((diff % (1000*60))/1000);
-
         countdownTimer.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds`;
     }else{
         countdownContainer.style.display='none';
