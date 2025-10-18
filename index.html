@@ -184,6 +184,68 @@ h1, p {
         padding: 0 20px;
     }
 }
+
+
+/* Diagonal comet with bright head and fading tail */
+.comet {
+    position: absolute;
+    width: 2px;
+    height: 100px; /* tail length */
+    background: linear-gradient(to top, #fff 0%, rgba(255,255,255,0) 100%); /* bright to transparent */
+    border-radius: 50%;
+    opacity: 1;
+    transform: rotate(-45deg); /* diagonal */
+    animation: fallComet 1.5s linear forwards;
+    filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 15px #fff); /* glow */
+}
+
+@keyframes fallComet {
+    0% { transform: translate(0, 0) rotate(-45deg); opacity: 1; }
+    100% { transform: translate(300px, 600px) rotate(-45deg); opacity: 0; } /* move diagonally */
+}
+
+
+/* Button */
+#launchRocket {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #ff5f6d, #ffc371);
+  border: none;
+  border-radius: 25px;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 10px #ff9;
+  transition: transform 0.2s ease;
+  z-index: 20;
+}
+#launchRocket:hover {
+  transform: translateX(-50%) scale(1.1);
+}
+
+/* Rocket */
+.rocket {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  background: url('images/rocket.png') no-repeat center center;
+  background-size: contain;
+  animation: rocketUp 3s linear forwards;
+}
+
+/* Rocket Launch Animation */
+@keyframes rocketUp {
+  0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-120vh); opacity: 0; }
+}
+
+
 </style>
 </head>
 <body>
@@ -193,6 +255,7 @@ h1, p {
     <div id="moonCountdown"></div>
     <h1>Countdown</h1>
     <p id="timer">Calculating...</p>
+    <button id="launchRocket">🚀 Launch Rocket</button>
 </div>
 
 <div id="birthday">
@@ -223,6 +286,31 @@ const starsCountdown = document.getElementById('starsCountdown');
 const starsBirthday = document.getElementById('stars');
 const cake = document.getElementById('cake');
 const wishes = document.getElementById('wishes');
+
+
+function launchComets(num){
+    for(let i=0;i<num;i++){
+        const comet = document.createElement('div');
+        comet.className='comet';
+        comet.style.left = Math.random() * window.innerWidth + 'px'; // starting X
+        comet.style.top = Math.random() * 100 + 'px'; // starting Y
+        document.body.appendChild(comet);
+        setTimeout(()=>comet.remove(), 1500); // remove after animation
+    }
+    setTimeout(()=>launchComets(num), 3000); // repeat
+}
+
+// Launch 2-3 comets
+launchComets(3);
+
+//Rocket
+document.getElementById('launchRocket').addEventListener('click', () => {
+    const rocket = document.createElement('div');
+    rocket.className = 'rocket';
+    document.body.appendChild(rocket);
+    setTimeout(() => rocket.remove(), 3000); // remove after animation
+});
+
 
 // Create stars
 function createStars(container, count){
