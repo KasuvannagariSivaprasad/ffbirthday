@@ -1,480 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Responsive Real-Time Birthday Countdown</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Happy Birthday — Wishes</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:Arial,sans-serif;background:#000033;color:#fff;overflow:hidden}
+  /* main container */
+  .page{
+    position:relative;
+    width:100%;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:20px;
+  }
 
-html, body {
-    height: 100%;
-    overflow: hidden; /* prevent scrolling */
-    font-family: Arial, sans-serif;
-    background-color: #000033;
-    color: white;
-    text-align: center;
-}
+  /* stars layers */
+  .stars, .stars-top{
+    position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;
+  }
+  .star{
+    position:absolute;background:#fff;border-radius:50%;opacity:.85;filter:drop-shadow(0 0 6px #fff);
+    animation:twinkle 2s infinite ease-in-out;
+  }
+  @keyframes twinkle{0%,100%{opacity:.4}50%{opacity:1}}
 
-/* Containers */
-#countdown, #birthday {
-    position: relative;
-    width: 100%;
-    height: 100vh; /* full viewport height */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
+  /* moon */
+  .moon{
+    position:absolute;top:6%;right:6%;width:14vw;max-width:110px;height:14vw;max-height:110px;
+    background:radial-gradient(circle at 30% 30%,#fff,#e6e9ff);
+    border-radius:50%;box-shadow:0 0 28px #fff,0 0 60px #999;z-index:3;
+  }
 
-/* Text: made fully responsive using clamp() */
-h1 {
-    position: relative;
-    z-index: 10;
-    margin: 10px 0;
-    font-size: clamp(18px, 4.5vw, 48px); /* responsive heading */
-    line-height: 1.1;
-    padding: 0 10px;
-    word-wrap: break-word;
-}
+  /* cake & photo */
+  #cake{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);width:36vw;max-width:220px;display:block;z-index:4}
+  #myPhoto{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:24vw;max-width:140px;border-radius:50%;box-shadow:0 0 14px #fff;z-index:4}
 
-p {
-    position: relative;
-    z-index: 10;
-    margin: 6px 0;
-    font-size: clamp(14px, 2.5vw, 22px); /* responsive paragraph */
-    padding: 0 12px;
-    word-wrap: break-word;
-}
+  /* wishes box */
+  .wishes{
+    position:relative;z-index:5;max-width:1000px;width:86vw;padding:20px 24px;border-radius:14px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow:0 8px 30px rgba(0,0,0,.6), inset 0 0 40px rgba(255,255,255,0.02);
+    backdrop-filter: blur(6px);
+  }
+  .wishes h1{font-size:clamp(20px,5vw,44px);line-height:1.05;margin-bottom:8px;text-shadow:0 0 14px rgba(255,255,255,.9)}
+  .wishes p{font-size:clamp(14px,2.3vw,22px);line-height:1.45;color:#fff;text-shadow:0 0 10px rgba(0,0,0,.2)}
 
-/* Stars */
-#starsCountdown, #stars {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: hidden;
-}
+  /* rocket button */
+  #launchRocket{
+    margin-top:18px;padding:10px 20px;border-radius:24px;border:0;background:linear-gradient(45deg,#ff5f6d,#ffc371);
+    color:#fff;font-size:clamp(14px,2.2vw,18px);cursor:pointer;box-shadow:0 6px 24px rgba(255,200,120,.12);z-index:6;
+  }
+  #launchRocket:active{transform:translateY(2px)}
 
-.star {
-    position: absolute;
-    background: #fff;
-    border-radius: 50%;
-    opacity: 0.8;
-    animation: twinkle 2s infinite ease-in-out;
-}
+  /* rocket sprite */
+  .rocket{
+    position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:86px;height:86px;background-size:contain;background-repeat:no-repeat;
+    z-index:6;pointer-events:none;
+  }
 
-@keyframes twinkle {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
+  /* firework particles */
+  .firework, .confetti, .comet{position:absolute;z-index:6;pointer-events:none;border-radius:50%}
 
-/* Moon */
-#moonCountdown, #moon {
-    position: absolute;
-    top: 5%;
-    right: 5%;
-    width: 15vw;
-    max-width: 100px;
-    height: 15vw;
-    max-height: 100px;
-    background: radial-gradient(circle at 30% 30%, #fff, #ddddff);
-    border-radius: 50%;
-    box-shadow: 0 0 30px #fff, 0 0 60px #aaa;
-    z-index: 5;
-}
+  .confetti{width:10px;height:10px}
+  .comet{width:3px;height:80px;background:linear-gradient(to top,#fff,rgba(255,255,255,0));border-radius:4px;transform:rotate(-45deg);filter:drop-shadow(0 0 10px #fff)}
+  @keyframes fall {0%{transform:translateY(0) rotate(0)}100%{transform:translateY(700px) rotate(360deg);opacity:0}}
 
-/* Cake as Image */
-#cake {
-    display: none;
-    position: absolute;
-    bottom: 5%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40vw;
-    max-width: 200px;
-    height: auto;
-}
-
-/* My Photo */
-#myPhoto {
-    display: none;
-    position: absolute;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 25vw;
-    max-width: 150px;
-    height: auto;
-    border-radius: 50%;
-    box-shadow: 0 0 15px #fff;
-}
-
-/* Wishes - made responsive and constrained so text won't overlap photos */
-#wishes {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 86vw; /* slightly reduced to give breathing space */
-    max-width: 1000px; /* max width */
-    font-size: clamp(14px, 2.6vw, 28px); /* responsive size */
-    line-height: 1.4; /* better line spacing */
-    text-shadow: 0 0 20px #fff;
-    z-index: 10;
-    padding: 12px 18px;
-    word-wrap: break-word;
-    white-space: normal;
-    max-height: 46vh; /* limit height so it doesn't run into top/bottom images */
-    overflow-y: auto; /* allow scroll if message is long */
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Rocket Button */
-#launchRocket {
-    position: relative;
-    margin-top: 20px; /* space below countdown */
-    padding: 10px 20px;
-    background: linear-gradient(45deg, #ff5f6d, #ffc371);
-    border: none;
-    border-radius: 25px;
-    font-size: clamp(14px, 2.2vw, 18px);
-    color: #fff;
-    cursor: pointer;
-    box-shadow: 0 0 10px #ff9;
-    transition: transform 0.2s ease;
-    z-index: 20;
-}
-
-#launchRocket:hover {
-    transform: scale(1.05);
-}
-
-/* Rocket */
-.rocket {
-    position: absolute;
-    bottom: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 100px;
-    background: url('rocket.png') no-repeat center center;
-    background-size: contain;
-    animation: rocketUp 3s linear forwards;
-}
-
-@keyframes rocketUp {
-    0% { transform: translateX(-50%) translateY(0); opacity: 1; }
-    100% { transform: translateX(-50%) translateY(-120vh); opacity: 0; }
-}
-
-/* Comet */
-.comet {
-    position: absolute;
-    width: 2px;
-    height: 100px;
-    background: linear-gradient(to top, #fff 0%, rgba(255,255,255,0) 100%);
-    border-radius: 50%;
-    opacity: 1;
-    transform: rotate(-45deg);
-    animation: fallComet 1.5s linear forwards;
-    filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 15px #fff);
-}
-
-@keyframes fallComet {
-    0% { transform: translate(0,0) rotate(-45deg); opacity: 1; }
-    100% { transform: translate(300px,600px) rotate(-45deg); opacity: 0; }
-}
-
-/* Fireworks */
-.firework {
-    position: absolute;
-    width: 0.8vw;
-    max-width: 5px;
-    height: 0.8vw;
-    max-height: 5px;
-    border-radius: 50%;
-}
-
-/* Confetti */
-.confetti {
-    position: absolute;
-    width: 1vw;
-    max-width: 10px;
-    height: 1vw;
-    max-height: 10px;
-    border-radius: 50%;
-    animation: fall 3s linear forwards;
-}
-
-@keyframes fall {
-    0% { transform: translateY(0) rotate(0deg); }
-    100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
-}
-
-/* Responsive tweaks */
-@media(max-width: 1024px){
-    #wishes { max-height: 40vh; font-size: clamp(13px, 3.2vw, 26px); }
-    #myPhoto { top: 6%; width: 28vw; max-width: 140px; }
-    #cake { bottom: 6%; width: 34vw; max-width: 180px; }
-}
-
-@media(max-width: 768px){
-    #wishes { font-size: clamp(12px, 4.6vw, 22px); width: 90vw; max-height: 44vh; padding: 10px; }
-    h1 { font-size: clamp(16px, 6vw, 36px); }
-    p { font-size: clamp(12px, 4vw, 18px); }
-
-    #moonCountdown, #moon {
-        width: 22vw;
-        height: 22vw;
-        max-width: 80px;
-        max-height: 80px;
-        top: 5%;
-        right: 5%;
-    }
-
-    #cake {
-        width: 30vw;
-        max-width: 150px;
-        bottom: 10%;
-    }
-
-    #myPhoto {
-        width: 30vw;
-        max-width: 120px;
-        top: 5%;
-    }
-
-    .rocket {
-        width: 60px;
-        height: 60px;
-        bottom: 20px;
-    }
-
-    #launchRocket {
-        margin-top: 10px; /* keep button centered below countdown */
-        font-size: 16px;
-    }
-}
+  /* responsive tweaks */
+  @media(max-width:768px){
+    .moon{width:22vw;height:22vw;max-width:96px;max-height:96px;top:4%;right:4%}
+    #cake{width:32vw;max-width:160px;bottom:8%}
+    #myPhoto{width:30vw;max-width:120px;top:6%}
+    .wishes{padding:14px}
+  }
 </style>
 </head>
 <body>
+  <div class="page" id="page">
+    <div class="stars" id="starsLayer"></div>
+    <div class="stars-top" id="starsTop"></div>
 
-<div id="countdown">
-    <div id="starsCountdown"></div>
-    <div id="moonCountdown"></div>
-    <h1>Countdown for my special persons Birthday</h1>
-    <p id="timer">Calculating...</p>
-    <button id="launchRocket">🚀 Launch Rocket</button>
-</div>
+    <div class="moon" aria-hidden="true"></div>
 
-<div id="birthday">
-    <div id="stars"></div>
-    <div id="moon"></div>
-    <img id="cake" src="cake.png" alt="Birthday Cake">
-    <img id="myPhoto" src="myphoto.jpg" alt="My Photo">
-    <div id="wishes">
-  <h1>❤️✨ Happy Birthday Loooosu ✨❤️</h1>
-My love, today is special because you came into this world. You are my peace, my happiness, and my forever. Every moment with you feels magical. No matter where life takes us, I promise to love you, protect you, and stay by your side till my last breath.
-I want to marry you one day and build a beautiful life with you. Happy Birthday, my love ❤️
-</div>
-</div>
+    <!-- Optional images; if not present browser will ignore them -->
+    <img id="myPhoto" src="myphoto.jpg" alt="Photo" onerror="this.style.display='none'"/>
+    <img id="cake" src="cake.png" alt="Cake" onerror="this.style.display='none'"/>
+
+    <div class="wishes" id="wishesBox" role="region" aria-label="Birthday wishes">
+      <h1>❤️✨ Happy Birthday Loooosu ✨❤️</h1>
+      <p>
+        My love, today is special because you came into this world. You are my peace, my happiness, and my forever.
+        Every moment with you feels magical. No matter where life takes us, I promise to love you, protect you,
+        and stay by your side till my last breath.
+      </p>
+      <p>
+        I want to marry you one day and build a beautiful life with you. Happy Birthday, my love ❤️
+      </p>
+
+      <button id="launchRocket" aria-label="Launch Rocket">🚀 Launch Rocket</button>
+    </div>
+
+    <!-- rocket element (created dynamically when button clicked) -->
+    <div id="rocketContainer"></div>
+  </div>
 
 <script>
-// Target date
-const targetDate = new Date();
-targetDate.setFullYear(targetDate.getFullYear());
-targetDate.setMonth(11);  // December (0-indexed: 11 => December)
-targetDate.setDate(1);
-targetDate.setHours(0,0,0,0);
-if(targetDate < new Date()) targetDate.setFullYear(targetDate.getFullYear()+1);
-
-const countdownTimer = document.getElementById('timer');
-const countdownContainer = document.getElementById('countdown');
-const birthdayContainer = document.getElementById('birthday');
-const starsCountdown = document.getElementById('starsCountdown');
-const starsBirthday = document.getElementById('stars');
-const cake = document.getElementById('cake');
-const wishes = document.getElementById('wishes');
-const myPhoto = document.getElementById('myPhoto');
-
-// Comets
-function launchComets(num){
-    for(let i=0;i<num;i++){
-        const comet = document.createElement('div');
-        comet.className='comet';
-        comet.style.left = Math.random() * window.innerWidth + 'px';
-        comet.style.top = Math.random() * (window.innerHeight*0.2) + 'px';
-        document.body.appendChild(comet);
-        setTimeout(()=>comet.remove(), 1500);
-    }
-    setTimeout(()=>launchComets(num), 3000);
-}
-launchComets(3);
-
-// Rocket button
-document.getElementById('launchRocket').addEventListener('click', () => {
-    const rocket = document.createElement('div');
-    rocket.className = 'rocket';
-    document.body.appendChild(rocket);
-    setTimeout(()=>rocket.remove(), 3000);
-});
-
-// Stars
-function createStars(container, count){
-    // clear existing stars in that container to prevent duplicates
+  // Utility to create stars
+  function makeStars(container, count){
+    // clear existing
     while(container.firstChild) container.removeChild(container.firstChild);
-
     for(let i=0;i<count;i++){
-        const star = document.createElement('div');
-        star.className='star';
-        const size = Math.random()*3+1;
-        star.style.width = `${size}px`;
-        star.style.height = `${size}px`;
-        star.style.top = `${Math.random()*100}%`;
-        star.style.left = `${Math.random()*100}%`;
-        star.style.animationDelay = `${Math.random()*2}s`;
-        container.appendChild(star);
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random()*3 + 1;
+      s.style.width = s.style.height = size + 'px';
+      s.style.left = (Math.random()*100) + '%';
+      s.style.top = (Math.random()*100) + '%';
+      s.style.opacity = (0.4 + Math.random()*0.6).toFixed(2);
+      s.style.animationDelay = (Math.random()*2) + 's';
+      container.appendChild(s);
     }
-}
-createStars(starsCountdown, 50);
+  }
 
-// Real-time fetch
-async function getRealTime(){
-    try{
-        const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Kolkata');
-        const data = await response.json();
-        return new Date(data.datetime);
-    }catch(err){
-        console.error(err);
-        // fallback to client time if API fails
-        return new Date();
+  // Stars layers
+  makeStars(document.getElementById('starsLayer'), 60);
+  makeStars(document.getElementById('starsTop'), 28);
+
+  // Comets (periodic)
+  function launchComet(){
+    const comet = document.createElement('div');
+    comet.className = 'comet';
+    comet.style.left = (Math.random() * window.innerWidth * 0.8) + 'px';
+    comet.style.top = (Math.random() * window.innerHeight * 0.18) + 'px';
+    document.body.appendChild(comet);
+    comet.animate([
+      { transform: 'translateX(0) translateY(0) rotate(-45deg)', opacity: 1 },
+      { transform: 'translateX(400px) translateY(600px) rotate(-45deg)', opacity: 0 }
+    ], { duration: 1400, easing: 'linear', fill: 'forwards' });
+    setTimeout(()=>comet.remove(), 1500);
+  }
+  setInterval(launchComet, 3000);
+
+  // Fireworks loop
+  function launchFireworks(batch=8){
+    for(let i=0;i<batch;i++){
+      const fw = document.createElement('div');
+      fw.className = 'firework';
+      fw.style.width = '6px';
+      fw.style.height = '20px';
+      fw.style.left = Math.random()*window.innerWidth + 'px';
+      fw.style.bottom = '0px';
+      fw.style.background = '#fff';
+      fw.style.position = 'absolute';
+      fw.style.borderRadius = '6px';
+      document.body.appendChild(fw);
+
+      const targetY = Math.random()*(window.innerHeight*0.5) + (window.innerHeight*0.15);
+      fw.animate([
+        { transform: 'translateY(0)', opacity:1 },
+        { transform: `translateY(-${targetY}px)`, opacity:1 }
+      ], { duration: 700 + Math.random()*500, easing: 'ease-out', fill:'forwards' });
+
+      setTimeout(()=> {
+        const count = 10 + Math.floor(Math.random()*18);
+        for(let j=0;j<count;j++){
+          const p = document.createElement('div');
+          p.className = 'firework';
+          p.style.width = '6px';
+          p.style.height = '6px';
+          p.style.left = fw.offsetLeft + 'px';
+          p.style.top = (window.innerHeight - targetY) + 'px';
+          p.style.position = 'absolute';
+          p.style.borderRadius = '50%';
+          p.style.background = `hsl(${Math.random()*360},100%,60%)`;
+          document.body.appendChild(p);
+          const angle = Math.random()*Math.PI*2;
+          const dist = 40 + Math.random()*120;
+          p.animate([
+            { transform:'translate(0,0)', opacity:1 },
+            { transform:`translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`, opacity:0 }
+          ], { duration: 900 + Math.random()*700, easing:'ease-out', fill:'forwards' });
+          setTimeout(()=>p.remove(), 1700);
+        }
+        fw.remove();
+      }, 700 + Math.random()*500);
     }
-}
+  }
+  setInterval(()=>launchFireworks(6), 1800);
 
-// ---- STORAGE HANDLING FOR 1-HOUR DISPLAY ----
-function showBirthdayScreen() {
-    countdownContainer.style.display = 'none';
-    birthdayContainer.style.display = 'flex';
-    cake.style.display = 'block';
-    myPhoto.style.display = 'block';
-    wishes.style.display = 'block';
-    createStars(starsBirthday, 50);
-    launchFireworks(15);
-    launchConfetti(50);
-}
-
-// Countdown
-async function updateCountdown(){
-    const now = await getRealTime();
-    const diff = targetDate - now;
-
-    if(diff > 0){
-        const days = Math.floor(diff / (1000*60*60*24));
-        const hours = Math.floor((diff % (1000*60*60*24))/(1000*60*60));
-        const minutes = Math.floor((diff % (1000*60*60))/(1000*60));
-        const seconds = Math.floor((diff % (1000*60))/1000);
-        countdownTimer.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds`;
-    }else{
-        // Save timestamp to localStorage for 1-hour persistence
-        localStorage.setItem("birthdayShownAt", Date.now());
-
-        showBirthdayScreen();
-        clearInterval(interval);
-    }
-}
-
-// Realistic Fireworks
-function launchFireworks(num) {
-    for (let i = 0; i < num; i++) {
-        const firework = document.createElement('div');
-        firework.className = 'firework';
-        firework.style.left = Math.random() * window.innerWidth + 'px';
-        firework.style.bottom = '0px';
-        firework.style.width = '4px';
-        firework.style.height = '20px';
-        firework.style.background = '#fff';
-        firework.style.position = 'absolute';
-        firework.style.borderRadius = '50%';
-        document.body.appendChild(firework);
-
-        const targetHeight = Math.random() * (window.innerHeight * 0.5) + (window.innerHeight * 0.2);
-        firework.animate([
-            { transform: 'translateY(0px)', opacity: 1 },
-            { transform: `translateY(-${targetHeight}px)`, opacity: 1 }
-        ], {
-            duration: 800 + Math.random() * 400,
-            easing: 'ease-out',
-            fill: 'forwards'
-        });
-
-        setTimeout(() => {
-            const explosionCount = 10 + Math.floor(Math.random() * 20);
-            for (let j = 0; j < explosionCount; j++) {
-                const particle = document.createElement('div');
-                particle.className = 'firework';
-                particle.style.width = '4px';
-                particle.style.height = '4px';
-                particle.style.borderRadius = '50%';
-                particle.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                particle.style.position = 'absolute';
-                particle.style.left = firework.offsetLeft + 'px';
-                particle.style.top = (window.innerHeight - targetHeight) + 'px';
-                document.body.appendChild(particle);
-
-                const angle = Math.random() * 2 * Math.PI;
-                const distance = Math.random() * 100 + 50;
-                particle.animate([
-                    { transform: 'translate(0,0)', opacity: 1 },
-                    { transform: `translate(${distance * Math.cos(angle)}px, ${distance * Math.sin(angle)}px)`, opacity: 0 }
-                ], {
-                    duration: 1000 + Math.random() * 500,
-                    easing: 'ease-out',
-                    fill: 'forwards'
-                });
-
-                setTimeout(() => particle.remove(), 1500);
-            }
-            firework.remove();
-        }, 800 + Math.random() * 400);
-    }
-    setTimeout(() => launchFireworks(num), 1500 + Math.random() * 500);
-}
-
-// Confetti
-function launchConfetti(num){
+  // Confetti loop
+  function launchConfetti(num=18){
     for(let i=0;i<num;i++){
-        const confetti = document.createElement('div');
-        confetti.className='confetti';
-        confetti.style.left=Math.random()*window.innerWidth+'px';
-        confetti.style.background=`hsl(${Math.random()*360},100%,50%)`;
-        document.body.appendChild(confetti);
-        setTimeout(()=>confetti.remove(),3000);
+      const c = document.createElement('div');
+      c.className='confetti';
+      c.style.left = Math.random()*window.innerWidth + 'px';
+      c.style.top = '-40px';
+      c.style.width = (6 + Math.random()*8) + 'px';
+      c.style.height = (6 + Math.random()*8) + 'px';
+      c.style.background = `hsl(${Math.random()*360}, 90%, 60%)`;
+      c.style.position='absolute';
+      document.body.appendChild(c);
+      c.animate([
+        { transform:'translateY(0) rotate(0)', opacity:1 },
+        { transform:`translateY(${window.innerHeight + 200}px) rotate(${360 + Math.random()*720}deg)`, opacity:0 }
+      ], { duration: 2800 + Math.random()*1600, easing:'linear', fill:'forwards' });
+      setTimeout(()=>c.remove(), 4200);
     }
-    setTimeout(()=>launchConfetti(num),3500);
-}
+  }
+  setInterval(()=>launchConfetti(12), 2600);
 
-// ---- CHECK IF WISHES SHOULD BE SHOWN FOR 1 HOUR ----
-const savedTime = localStorage.getItem("birthdayShownAt");
-if(savedTime){
-    const now = Date.now();
-    const diff = now - savedTime;
+  // Launch rocket action (creates one rocket animation)
+  document.getElementById('launchRocket').addEventListener('click', ()=>{
+    const r = document.createElement('div');
+    r.className = 'rocket';
+    r.style.backgroundImage = "url('rocket.png')";
+    document.getElementById('rocketContainer').appendChild(r);
 
-    if(diff < 24 * 60 * 60 * 1000){  // 1 hour
-        // Show wishes directly
-        showBirthdayScreen();
-    } else {
-        // Expired -> clear storage
-        localStorage.removeItem("birthdayShownAt");
-    }
-}
+    r.animate([
+      { transform: 'translateX(-50%) translateY(0) scale(1)', opacity:1 },
+      { transform: 'translateX(-50%) translateY(-120vh) scale(.9)', opacity:0 }
+    ], { duration: 2600, easing: 'linear', fill: 'forwards' });
 
-const interval = setInterval(updateCountdown, 1000);
-updateCountdown();
+    setTimeout(()=>r.remove(), 2800);
+  });
+
+  // Accessibility: allow keyboard activation
+  document.getElementById('launchRocket').addEventListener('keyup', (e)=>{
+    if(e.key === 'Enter' || e.key === ' ') document.getElementById('launchRocket').click();
+  });
+
+  // Prevent off-canvas scrolling on mobile
+  window.addEventListener('touchmove', function(e){
+    // allow internal scroll within wishes box only
+    const target = e.target;
+    if(!document.getElementById('wishesBox').contains(target)) e.preventDefault();
+  }, { passive: false });
+
+  // ensure responsiveness on resize (recreate stars for density)
+  let resizeTimer;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(()=>{
+      makeStars(document.getElementById('starsLayer'), 60);
+      makeStars(document.getElementById('starsTop'), 28);
+    }, 120);
+  });
 </script>
 </body>
 </html>
