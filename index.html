@@ -28,11 +28,24 @@ html, body {
     overflow: hidden;
 }
 
-/* Text */
-h1, p {
+/* Text: made fully responsive using clamp() */
+h1 {
     position: relative;
     z-index: 10;
     margin: 10px 0;
+    font-size: clamp(18px, 4.5vw, 48px); /* responsive heading */
+    line-height: 1.1;
+    padding: 0 10px;
+    word-wrap: break-word;
+}
+
+p {
+    position: relative;
+    z-index: 10;
+    margin: 6px 0;
+    font-size: clamp(14px, 2.5vw, 22px); /* responsive paragraph */
+    padding: 0 12px;
+    word-wrap: break-word;
 }
 
 /* Stars */
@@ -100,23 +113,26 @@ h1, p {
     box-shadow: 0 0 15px #fff;
 }
 
+/* Wishes - made responsive and constrained so text won't overlap photos */
 #wishes {
     display: none;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90vw; /* widened width */
+    width: 86vw; /* slightly reduced to give breathing space */
     max-width: 1000px; /* max width */
-    font-size: 1vw; /* smaller font size */
+    font-size: clamp(14px, 2.6vw, 28px); /* responsive size */
     line-height: 1.4; /* better line spacing */
     text-shadow: 0 0 20px #fff;
     z-index: 10;
-    padding: 10px 20px;
+    padding: 12px 18px;
     word-wrap: break-word;
     white-space: normal;
+    max-height: 46vh; /* limit height so it doesn't run into top/bottom images */
+    overflow-y: auto; /* allow scroll if message is long */
+    -webkit-overflow-scrolling: touch;
 }
-
 
 /* Rocket Button */
 #launchRocket {
@@ -126,7 +142,7 @@ h1, p {
     background: linear-gradient(45deg, #ff5f6d, #ffc371);
     border: none;
     border-radius: 25px;
-    font-size: 18px;
+    font-size: clamp(14px, 2.2vw, 18px);
     color: #fff;
     cursor: pointer;
     box-shadow: 0 0 10px #ff9;
@@ -135,7 +151,7 @@ h1, p {
 }
 
 #launchRocket:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 /* Rocket */
@@ -200,11 +216,17 @@ h1, p {
     100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
 }
 
-/* Responsive */
+/* Responsive tweaks */
+@media(max-width: 1024px){
+    #wishes { max-height: 40vh; font-size: clamp(13px, 3.2vw, 26px); }
+    #myPhoto { top: 6%; width: 28vw; max-width: 140px; }
+    #cake { bottom: 6%; width: 34vw; max-width: 180px; }
+}
+
 @media(max-width: 768px){
-    #wishes { font-size: 8vw; }
-    h1 { font-size: 6vw; }
-    p { font-size: 4vw; }
+    #wishes { font-size: clamp(12px, 4.6vw, 22px); width: 90vw; max-height: 44vh; padding: 10px; }
+    h1 { font-size: clamp(16px, 6vw, 36px); }
+    p { font-size: clamp(12px, 4vw, 18px); }
 
     #moonCountdown, #moon {
         width: 22vw;
@@ -256,17 +278,13 @@ h1, p {
     <img id="cake" src="cake.png" alt="Birthday Cake">
     <img id="myPhoto" src="myphoto.png" alt="My Photo">
     <div id="wishes">
-  🎂 Happy Birthday! 🎉 May your day be filled with joy and celebrations!Cheers to another wonderful year ahead! 🥳🎈throughout the year.wonderful yearwonderful yearwonderful year
-  Wishing you happiness, success, and good health throughout the year.Cheers to another wonderful year ahead! 🥳🎈throughout the year.wonderful yearwonderful yearwonderful year
-  Cheers to another wonderful year ahead! 🥳🎈 Cheers to another wonderful year ahead! 🥳🎈Cheers to another wonderful year ahead! 🥳🎈wonderful yearwonderful yearwonderful year
-</div>
-
+  🎂 Happy Birthday! 🎉 May your day be filled with joy and celebrations!Cheers to another wonderful year ahead! 🥳🎈throughout the year.
 </div>
 
 <script>
 // Target date
 const targetDate = new Date();
-targetDate.setFullYear(2025);
+targetDate.setFullYear(targetDate.getFullYear());
 targetDate.setMonth(11);  // December
 targetDate.setDate(1);
 targetDate.setHours(0,0,0,0);
