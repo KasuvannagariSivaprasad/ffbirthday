@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Responsive Real-Time Birthday Countdown</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -276,18 +276,19 @@ p {
     <div id="stars"></div>
     <div id="moon"></div>
     <img id="cake" src="cake.png" alt="Birthday Cake">
-    <img id="myPhoto" src="myphoto.png" alt="My Photo">
+    <img id="myPhoto" src="myphoto.jpg" alt="My Photo">
     <div id="wishes">
   <h1>❤️✨ Happy Birthday Loooosu ✨❤️</h1>
 My love, today is special because you came into this world. You are my peace, my happiness, and my forever. Every moment with you feels magical. No matter where life takes us, I promise to love you, protect you, and stay by your side till my last breath.
 I want to marry you one day and build a beautiful life with you. Happy Birthday, my love ❤️
+</div>
 </div>
 
 <script>
 // Target date
 const targetDate = new Date();
 targetDate.setFullYear(targetDate.getFullYear());
-targetDate.setMonth(11);  // December
+targetDate.setMonth(11);  // December (0-indexed: 11 => December)
 targetDate.setDate(1);
 targetDate.setHours(0,0,0,0);
 if(targetDate < new Date()) targetDate.setFullYear(targetDate.getFullYear()+1);
@@ -325,11 +326,15 @@ document.getElementById('launchRocket').addEventListener('click', () => {
 
 // Stars
 function createStars(container, count){
+    // clear existing stars in that container to prevent duplicates
+    while(container.firstChild) container.removeChild(container.firstChild);
+
     for(let i=0;i<count;i++){
         const star = document.createElement('div');
         star.className='star';
-        star.style.width = `${Math.random()*3+1}px`;
-        star.style.height = star.style.width;
+        const size = Math.random()*3+1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
         star.style.top = `${Math.random()*100}%`;
         star.style.left = `${Math.random()*100}%`;
         star.style.animationDelay = `${Math.random()*2}s`;
@@ -346,8 +351,21 @@ async function getRealTime(){
         return new Date(data.datetime);
     }catch(err){
         console.error(err);
+        // fallback to client time if API fails
         return new Date();
     }
+}
+
+// ---- STORAGE HANDLING FOR 1-HOUR DISPLAY ----
+function showBirthdayScreen() {
+    countdownContainer.style.display = 'none';
+    birthdayContainer.style.display = 'flex';
+    cake.style.display = 'block';
+    myPhoto.style.display = 'block';
+    wishes.style.display = 'block';
+    createStars(starsBirthday, 50);
+    launchFireworks(15);
+    launchConfetti(50);
 }
 
 // Countdown
@@ -362,14 +380,10 @@ async function updateCountdown(){
         const seconds = Math.floor((diff % (1000*60))/1000);
         countdownTimer.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds`;
     }else{
-        countdownContainer.style.display='none';
-        birthdayContainer.style.display='flex';
-        cake.style.display='block';
-        myPhoto.style.display='block';
-        wishes.style.display='block';
-        createStars(starsBirthday, 50);
-        launchFireworks(15);
-        launchConfetti(50);
+        // Save timestamp to localStorage for 1-hour persistence
+        localStorage.setItem("birthdayShownAt", Date.now());
+
+        showBirthdayScreen();
         clearInterval(interval);
     }
 }
@@ -442,6 +456,21 @@ function launchConfetti(num){
         setTimeout(()=>confetti.remove(),3000);
     }
     setTimeout(()=>launchConfetti(num),3500);
+}
+
+// ---- CHECK IF WISHES SHOULD BE SHOWN FOR 1 HOUR ----
+const savedTime = localStorage.getItem("birthdayShownAt");
+if(savedTime){
+    const now = Date.now();
+    const diff = now - savedTime;
+
+    if(diff < 24 * 60 * 60 * 1000){  // 1 hour
+        // Show wishes directly
+        showBirthdayScreen();
+    } else {
+        // Expired -> clear storage
+        localStorage.removeItem("birthdayShownAt");
+    }
 }
 
 const interval = setInterval(updateCountdown, 1000);
