@@ -284,10 +284,10 @@ p {
 <script>
 // Target date
 const targetDate = new Date();
-targetDate.setFullYear(2025);
-targetDate.setMonth(10);  // December
-targetDate.setDate(30);
-targetDate.setHours(19,52,0,0);
+targetDate.setFullYear(targetDate.getFullYear());
+targetDate.setMonth(11);  // December
+targetDate.setDate(1);
+targetDate.setHours(0,0,0,0);
 if(targetDate < new Date()) targetDate.setFullYear(targetDate.getFullYear()+1);
 
 const countdownTimer = document.getElementById('timer');
@@ -364,7 +364,7 @@ async function updateCountdown(){
         birthdayContainer.style.display='flex';
         cake.style.display='block';
         myPhoto.style.display='block';
-        wishes.style.display='block';
+        setTimeout(() => { wishes.style.display='block'; }, 24 * 60 * 60 * 1000);
         createStars(starsBirthday, 50);
         launchFireworks(15);
         launchConfetti(50);
